@@ -12,6 +12,7 @@
                  [compojure               "1.1.3"]]
 
   :plugins      [[lein-cljsbuild          "0.2.7"]]
+  :hooks        [leiningen.cljsbuild]
 
   :main         "demo.core/-main"
   :cljsbuild    {:repl-listen           "9000",
