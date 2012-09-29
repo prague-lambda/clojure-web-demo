@@ -1,25 +1,40 @@
-# demo
+# Demo 3 - simple chat
 
-project.clj
------------
+In Demo 3 we implement simple "chatroom" using GET and POST
+requests (no ajax at this moment).
 
-For the second demo we included two libraries: hiccup and
-compojure. 
+Chatroom message
+----------------
 
-    https://github.com/weavejester/hiccup
-    https://github.com/weavejester/compojure
-	
-For easier request handling we also added ring-core and 
-ring-devel. Both include definition of ring "middleware".
+[message.clj](src/demo/message.clj) implements simple storage to 
+store chatroom messages between calls. At this moment we do not
+implement any complex database storage - we store all data
+in sorted maps.
 
-Hiccup
-------
+HTML rendering
+---------------
 
-Hiccup is a library for HTML rendering from Clojure data 
-structures
+[page.clj](src/demo/page.clj) renders basic main page and messages
+using Hiccup library we introduced in Demo 2.
 
-Compojure
----------
+Routing
+-------
 
-Is a DSL (Domain Specific Language) for writing routing 
-information for Ring. 
+We use Compojure to add more rules for routing in [core.clj](src/demo/core.clj).
+Most notable changs
+
+- We used `wrap-session` middleware to store message authors name in cookies.
+  See how we add a cookie into response in `room-route` POST handling function.
+  
+- We use parameter destructuring to extract POST parameters in
+  `room-route` and in `room-validate`. It has same syntax as
+  specification of function parameters.
+  
+- In `main-route` definition we use destructuring to extract chat room name
+  
+```
+(context "/room/:room" [] ...)
+```
+ 
+Compojure rules store extracted part into request and later we use this parameter
+in `room-validate` and POST request.
