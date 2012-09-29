@@ -47,6 +47,8 @@ To execute our example we can run
 
 or 
 
-`lein repl
+```
+lein repl
 > (use 'demo.core)
-> (-main)`
+> (-main)
+```
