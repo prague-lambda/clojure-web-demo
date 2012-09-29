@@ -1,8 +1,8 @@
 # Adding ClojureScript to Chat Room Demo
 
 In the last iteration of our demo we add ClojureScript to improve our 
-(simple chat server)[demo/demo-3-chat]. We will poll server using XhrIo
-request to fetch new chat room messages without page refresh.
+[simple chat server](demo/demo-3-chat) from Demo 3. We will poll server
+using XhrIo request to fetch new chat room messages without page refresh.
 
 lein-cljsbuild
 --------------
@@ -51,7 +51,7 @@ Server polling from browser
 ClojureScript uses [Google Closure](http://closure-library.googlecode.com/svn/docs/index.html) library. 
 We use `goog.net.XhrIo` and `goog.Timer` to build simple polling mechanism. 
 
-`clojure.browser.dom`, `net` and `event` libraries are simple ClojureScript wrappers around
+clojure.browser.dom, net and event libraries are simple ClojureScript wrappers around
 Google Closure functionality.
 
 
