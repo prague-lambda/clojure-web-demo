@@ -3,32 +3,34 @@
                 [ring.adapter.jetty     :as jetty]
                 [demo.page              :as page]
                 [demo.message           :as msg]
+                [demo.gravatar          :as gravatar]
                 [ring.util.response     :as resp]
                 [ring.middleware session stacktrace params keyword-params])
   (:use         [compojure core route]))
 
 (defonce rooms (atom {}))
 
-(defn add-message-to-room! [ROOM AUTHOR BODY]
+(defn add-message-to-room! [ROOM AUTHOR EMAIL BODY]
   (when-not (empty? BODY)
     (swap! rooms update-in [ROOM]
-           msg/log-add-message AUTHOR BODY
+           msg/log-add-message AUTHOR (gravatar/generate-token EMAIL) BODY
            (str (java.util.Date.)))))
 
 (defroutes room-route
   (GET "/" [room :as req]
      (let [logs (@rooms room)]
-         (page/render-room room logs (-> req :session :author))))
-  (POST "/" [room author body :as req]
+       (page/render-room room logs (-> req :session :author) (-> req :session :email))))
+  (POST "/" [room author email body :as req]
      (let [logs       (@rooms room)
            written-by (or (when-not (empty? author) author)
                           (-> req :session :author)
                           "Anonymous")]
-       (add-message-to-room! room author body)
+       (add-message-to-room! room author email body)
        ;; redirect back to room
        (-> (resp/redirect-after-post (str "/room/" room))
            ;;  and add a author into session as a cookie
-           (assoc-in [:session :author] author)))))
+           (assoc-in [:session :author] author)
+           (assoc-in [:session :email] email)))))
 
 (defn room-validate
   "Validates room parameter - if room already exits"
@@ -53,11 +55,11 @@
   (GET "/"  []
      (page/list-chatrooms @rooms))
   (context "/room/:room" []
-     room-validate
-     room-route)
+     #'room-validate
+     #'room-route)
   (context "/api/:room" []
-     room-validate
-     api-route)
+     #'room-validate
+     #'api-route)
   (resources "/")
   (POST "/new-room" [:as r]
     (let [new-name (-> r :params :room-id
